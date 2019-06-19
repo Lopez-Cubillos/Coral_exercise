@@ -1,0 +1,61 @@
+---
+title: "Tidy Coral exercise"
+author: "Sofia"
+date: "19/6/2019"
+output: html_document
+---
+
+```{r setup, warning=FALSE, message=FALSE}
+library(tidyverse) #install.packages("tidyverse")
+library(janitor) #install.packages("janitor")
+library(skimr) #install.packages("skimr")
+library(stringr)#install.packages("stringr")
+
+## data filepaths/urls ----
+
+# https://nceas.github.io/crescynt-training/tidy_coral
+
+## benthic data
+benthic_url <- 'https://www.nodc.noaa.gov/archive/arc0054/0104255/1.1/data/0-data/cd08/100308OaAla03m.CSV'
+
+## buoy data
+buoy_url <- 'http://www.ndbc.noaa.gov/view_text_file.php?filename=mokh1h2010.txt.gz&dir=data/historical/stdmet/'
+
+```
+
+```{r benthic raw}
+
+benthic_raw <- read_csv(benthic_url)
+```
+
+Wrangle
+```{r Wrangle}
+# wrange time
+benthic <- benthic_raw %>% 
+  janitor::clean_names() #the 'janitor::' is to mention from which package I'm taking this fuction, as it's not familiar to me.. <<<< THIS MAKE ALL THE COLUMN NAMES TIDY!!!
+
+#Select columns that we need
+benthic <- benthic %>% 
+  select(id_name, point, x, y, id_date) %>% 
+  mutate(date=stringr::str_remove_all(id_date, "#"))
+```
+
+Plotting
+```{r, plotting}
+
+ggplot(benthic, aes(date, fill=id_date))+
+  geom_bar()
+
+
+
+```
+
+Buoy data
+```{r buoy data}
+buoy1 <- read_csv(buoy_url) # This didn't work!!
+
+buoy <- read_table2(buoy_url) #We used read_table2 becuase reading it as csv wasn't working properly as it showed all the information in one variable
+
+```
+
+
